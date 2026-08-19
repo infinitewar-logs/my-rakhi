@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Interactive 3D Rakhi & Polaroid Wall</title>
-    <!-- Google Fonts for Polaroid Captions -->
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -32,13 +33,80 @@
         overflow-x: hidden;
       }
 
+      /* Utility */
+      .hidden {
+        display: none !important;
+      }
+
+      /* PIN Screen Modal Overlay */
+      #pin-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        background: radial-gradient(circle at center, #1a0808 0%, #050202 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .pin-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 215, 0, 0.2);
+        padding: 2.5rem 2rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+        max-width: 360px;
+        width: 100%;
+      }
+
+      .pin-card h2 {
+        font-size: 1.5rem;
+        color: #ffd700;
+        margin-bottom: 0.5rem;
+      }
+
+      .pin-card p {
+        font-size: 0.9rem;
+        color: #a1a1aa;
+        margin-bottom: 1.5rem;
+      }
+
+      .pin-input {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1.5rem;
+        letter-spacing: 0.5rem;
+        text-align: center;
+        background: #121212;
+        border: 1px solid #333;
+        border-radius: 6px;
+        color: #ffd700;
+        outline: none;
+        transition: border-color 0.3s;
+      }
+
+      .pin-input:focus {
+        border-color: #ffd700;
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+      }
+
+      #pin-error {
+        margin-top: 1rem;
+        font-size: 0.85rem;
+        color: #ff4d4d;
+        height: 1.2rem;
+      }
+
       /* Hero Section / Canvas Container */
       #canvas-container {
         position: relative;
         width: 100vw;
         height: 100vh;
         background: radial-gradient(circle at center, #1a0808 0%, #050202 100%);
-        touch-action: none; /* Prevents scroll interference on touch drag */
+        touch-action: none;
       }
 
       .hero-title {
@@ -130,7 +198,6 @@
         line-height: 1.2;
       }
 
-      /* Subtle Random Rotation & Hover Effects */
       .polaroid:nth-child(1) {
         transform: rotate(-3deg);
       }
@@ -143,12 +210,6 @@
       .polaroid:nth-child(4) {
         transform: rotate(4deg);
       }
-      .polaroid:nth-child(5) {
-        transform: rotate(-4deg);
-      }
-      .polaroid:nth-child(6) {
-        transform: rotate(3deg);
-      }
 
       .polaroid:hover {
         transform: scale(1.08) rotate(0deg) !important;
@@ -159,67 +220,130 @@
 
     <!-- Three.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   </head>
   <body>
-
-    <!-- Polaroid Wall Section -->
-     <div>
-
-  
-    <section id="polaroid-wall">
-      <div class="gallery-header">
-        <h2>A sibling is a forever friend wrapped in childhood memories.</h2>
+    <!-- Security PIN Verification Layer -->
+    <div id="pin-screen">
+      <div class="pin-card">
+        <h2>Protected Memory Wall</h2>
+        <p>Enter the 4-digit PIN to access</p>
+        <input
+          type="password"
+          id="pin-input"
+          class="pin-input"
+          maxlength="4"
+          placeholder="••••"
+          autofocus
+        />
+        <div id="pin-error"></div>
       </div>
-
-      <div class="gallery-grid">
-        <div class="polaroid">
-          <div class="polaroid-img-wrapper">
-            <img src="/img/shenanigans.jpg" />
-          </div>
-          <div class="polaroid-caption">Childhood Shenanigans</div>
-        </div>
-
-        <div class="polaroid">
-          <div class="polaroid-img-wrapper">
-            <img src="/img/rakhi time.jpg" />
-          </div>
-          <div class="polaroid-caption">Lighting Diya's and having fun</div>
-        </div>
-
-        <div class="polaroid">
-          <div class="polaroid-img-wrapper">
-            <img src="/img/junk food table.jpg" />
-          </div>
-          <div class="polaroid-caption">The Big Junk food appitiet </div>
-        </div>
-
-
-        <div class="polaroid">
-          <div class="polaroid-img-wrapper">
-            <img src="/img/icecream.jpg" />
-          </div>
-          <div class="polaroid-caption">Sweet Moments of discussing hobbies</div>
-        </div>
-
     </div>
 
-    <div id="canvas-container">
+    <!-- Main Content Container (Hidden until unlocked) -->
+    <div id="main-wrapper" class="hidden">
+      <section id="polaroid-wall">
+        <div class="gallery-header">
+          <h2>A sibling is a forever friend wrapped in childhood memories.</h2>
+        </div>
+
+        <div class="gallery-grid">
+          <div class="polaroid">
+            <div class="polaroid-img-wrapper">
+              <img src="/img/shenanigans.jpg" alt="Childhood Shenanigans" />
+            </div>
+            <div class="polaroid-caption">Childhood Shenanigans</div>
+          </div>
+
+          <div class="polaroid">
+            <div class="polaroid-img-wrapper">
+              <img src="/img/rakhi time.jpg" alt="Rakhi time" />
+            </div>
+            <div class="polaroid-caption">Lighting Diya's and having fun</div>
+          </div>
+
+          <div class="polaroid">
+            <div class="polaroid-img-wrapper">
+              <img src="/img/junk food table.jpg" alt="Junk food table" />
+            </div>
+            <div class="polaroid-caption">The Big Junk food appetite</div>
+          </div>
+
+          <div class="polaroid">
+            <div class="polaroid-img-wrapper">
+              <img src="/img/icecream.jpg" alt="Ice cream" />
+            </div>
+            <div class="polaroid-caption">
+              Sweet Moments of discussing hobbies
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div id="canvas-container">
         <div class="hero-title">
           <h1>Happy Raksha Bandhan</h1>
           <p>Move cursor or drag across the screen to rotate</p>
         </div>
       </div>
+    </div>
 
-
-    <!-- Three.js Logic -->
+    <!-- Scripts -->
     <script>
-      // --- 1. Scene, Camera, & Renderer Setup ---
+      // --- Security PIN & Confetti Logic ---
+      const CORRECT_PIN = "3978"; // Set your 4-digit PIN here
+      const pinScreen = document.getElementById("pin-screen");
+      const mainWrapper = document.getElementById("main-wrapper");
+      const pinInput = document.getElementById("pin-input");
+      const pinError = document.getElementById("pin-error");
+
+      function triggerConfetti() {
+        const count = 200;
+        const defaults = { origin: { y: 0.7 } };
+
+        function fire(particleRatio, opts) {
+          confetti({
+            ...defaults,
+            ...opts,
+            particleCount: Math.floor(count * particleRatio),
+          });
+        }
+
+        fire(0.25, { spread: 26, startVelocity: 55 });
+        fire(0.2, { spread: 60 });
+        fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+        fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+        fire(0.1, { spread: 120, startVelocity: 45 });
+      }
+
+      pinInput.addEventListener("input", () => {
+        pinError.textContent = "";
+
+        if (pinInput.value.length === 4) {
+          if (pinInput.value === CORRECT_PIN) {
+            pinScreen.classList.add("hidden");
+            mainWrapper.classList.remove("hidden");
+
+            // Resize canvas once wrapper is visible
+            onWindowResize();
+
+            // Fire confetti animation
+            triggerConfetti();
+          } else {
+            pinError.textContent = "Incorrect PIN! Try again.";
+            pinInput.value = "";
+          }
+        }
+      });
+
+      // --- Three.js Setup ---
       const container = document.getElementById("canvas-container");
       const scene = new THREE.Scene();
 
       const camera = new THREE.PerspectiveCamera(
         45,
-        container.clientWidth / container.clientHeight,
+        window.innerWidth / window.innerHeight,
         0.1,
         1000,
       );
@@ -229,11 +353,11 @@
         antialias: true,
         alpha: true,
       });
-      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       container.appendChild(renderer.domElement);
 
-      // --- 2. Lighting Setup ---
+      // Lighting Setup
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
       scene.add(ambientLight);
 
@@ -245,44 +369,46 @@
       pointLight.position.set(-3, -2, 3);
       scene.add(pointLight);
 
-      // --- 3. Constructing the 3D Rakhi ---
+      // Constructing 3D Rakhi
       const rakhiGroup = new THREE.Group();
 
-      // Materials
       const goldMaterial = new THREE.MeshStandardMaterial({
         color: 0xffd700,
-        metalness: 0.85,
+        metalness: 0.55,
+        roughness: 0.2,
+        emissive: 0x332200,
+      });
+
+      const centerMaterial = new THREE.MeshStandardMaterial({
+        color: 0xfff1ff,
+        metalness: 0.55,
         roughness: 0.2,
         emissive: 0x332200,
       });
 
       const crimsonMaterial = new THREE.MeshStandardMaterial({
-        color: 0xdc143c  ,
+        color: 0xffffff,
         roughness: 0.4,
         metalness: 0.1,
       });
 
       const saffronMaterial = new THREE.MeshStandardMaterial({
-        color: 0xff8c00,
+        color: 0xffffff,
         roughness: 0.3,
       });
 
-      // A. Thread / Band (Left and Right Torus Tubing)
       const threadGeo = new THREE.TorusGeometry(3.5, 0.08, 16, 100);
 
-      // Left Thread Curve
       const leftThread = new THREE.Mesh(threadGeo, saffronMaterial);
       leftThread.scale.set(1, 0.05, 1);
       leftThread.position.x = -3.5;
       rakhiGroup.add(leftThread);
 
-      // Right Thread Curve
       const rightThread = new THREE.Mesh(threadGeo, saffronMaterial);
       rightThread.scale.set(1, 0.05, 1);
       rightThread.position.x = 3.5;
       rakhiGroup.add(rightThread);
 
-      // B. Center Base Dial (Cylinder with Red & Gold Layers)
       const baseGeo = new THREE.CylinderGeometry(1.8, 1.8, 0.1, 64);
       const baseDial = new THREE.Mesh(baseGeo, crimsonMaterial);
       baseDial.rotation.x = Math.PI / 2;
@@ -293,13 +419,11 @@
       goldRing.position.z = 0.06;
       rakhiGroup.add(goldRing);
 
-      // C. Top Ornamentation (Petals & Beads)
       const petalCount = 12;
       for (let i = 0; i < petalCount; i++) {
         const angle = (i / petalCount) * Math.PI * 2;
         const radius = 1.1;
 
-        // Outer Gold Beads
         const beadGeo = new THREE.SphereGeometry(0.15, 16, 16);
         const bead = new THREE.Mesh(beadGeo, goldMaterial);
         bead.position.set(
@@ -308,26 +432,17 @@
           0.12,
         );
         rakhiGroup.add(bead);
-
-        // Inner Decorative Ring (Faceted Cones)
-       // const coneGeo = new THREE.ConeGeometry(0.18, 0.4, 5);
-       // const cone = new THREE.Mesh(coneGeo, saffronMaterial);
-       // cone.position.set(Math.cos(angle) * 0.6, Math.sin(angle) * 0.6, 0.18);
-       // cone.rotation.z = angle - Math.PI / 2;
-       //cone.rotation.x = Math.PI / 2;
-      //  rakhiGroup.add(cone);
       }
 
-      // Central Gem Focus
       const centerGemGeo = new THREE.SphereGeometry(0.35, 32, 32);
       centerGemGeo.scale(1, 1, 0.5);
-      const centerGem = new THREE.Mesh(centerGemGeo, goldMaterial);
+      const centerGem = new THREE.Mesh(centerGemGeo, centerMaterial);
       centerGem.position.z = 0.22;
       rakhiGroup.add(centerGem);
 
       scene.add(rakhiGroup);
 
-      // --- 4. Interactive Cursor & Touch Logic ---
+      // Interactive Cursor & Touch Logic
       let targetRotationX = 0;
       let targetRotationY = 0;
       let mouseX = 0;
@@ -336,7 +451,6 @@
       const windowHalfX = window.innerWidth / 2;
       const windowHalfY = window.innerHeight / 2;
 
-      // Mouse Tracking
       function onPointerMove(event) {
         mouseX = (event.clientX - windowHalfX) / windowHalfX;
         mouseY = (event.clientY - windowHalfY) / windowHalfY;
@@ -345,7 +459,6 @@
         targetRotationX = mouseY * 0.8;
       }
 
-      // Touch Tracking
       function onTouchMove(event) {
         if (event.touches.length > 0) {
           mouseX = (event.touches[0].clientX - windowHalfX) / windowHalfX;
@@ -359,28 +472,27 @@
       container.addEventListener("mousemove", onPointerMove);
       container.addEventListener("touchmove", onTouchMove, { passive: true });
 
-      // --- 5. Responsive Resize Handling ---
-      window.addEventListener("resize", () => {
-        const width = container.clientWidth;
-        const height = container.clientHeight;
+      function onWindowResize() {
+        const width = container.clientWidth || window.innerWidth;
+        const height = container.clientHeight || window.innerHeight;
 
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
 
         renderer.setSize(width, height);
-      });
+      }
 
-      // --- 6. Animation Loop ---
+      window.addEventListener("resize", onWindowResize);
+
+      // Animation Loop
       function animate() {
         requestAnimationFrame(animate);
 
-        // Smooth Interpolation (Lerp)
         rakhiGroup.rotation.y +=
           (targetRotationY - rakhiGroup.rotation.y) * 0.05;
         rakhiGroup.rotation.x +=
           (targetRotationX - rakhiGroup.rotation.x) * 0.05;
 
-        // Continuous Idle Pulse/Float
         rakhiGroup.position.y = Math.sin(Date.now() * 0.0015) * 0.15;
 
         renderer.render(scene, camera);

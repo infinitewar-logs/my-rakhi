@@ -168,7 +168,7 @@
   
     <section id="polaroid-wall">
       <div class="gallery-header">
-        <h2>Memories Wall</h2>
+        <h2>A sibling is a forever friend wrapped in childhood memories.</h2>
       </div>
 
       <div class="gallery-grid">
@@ -257,7 +257,7 @@
       });
 
       const crimsonMaterial = new THREE.MeshStandardMaterial({
-        color: 0xdc143c,
+        color: 0xdc143c  ,
         roughness: 0.4,
         metalness: 0.1,
       });
@@ -310,12 +310,12 @@
         rakhiGroup.add(bead);
 
         // Inner Decorative Ring (Faceted Cones)
-        const coneGeo = new THREE.ConeGeometry(0.18, 0.4, 5);
-        const cone = new THREE.Mesh(coneGeo, saffronMaterial);
-        cone.position.set(Math.cos(angle) * 0.6, Math.sin(angle) * 0.6, 0.18);
-        cone.rotation.z = angle - Math.PI / 2;
-        cone.rotation.x = Math.PI / 2;
-        rakhiGroup.add(cone);
+       // const coneGeo = new THREE.ConeGeometry(0.18, 0.4, 5);
+       // const cone = new THREE.Mesh(coneGeo, saffronMaterial);
+       // cone.position.set(Math.cos(angle) * 0.6, Math.sin(angle) * 0.6, 0.18);
+       // cone.rotation.z = angle - Math.PI / 2;
+       //cone.rotation.x = Math.PI / 2;
+      //  rakhiGroup.add(cone);
       }
 
       // Central Gem Focus
